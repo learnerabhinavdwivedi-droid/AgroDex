@@ -534,6 +534,38 @@ router.get("/verify-batch/:tokenId/:serialNumber", async (req, res) => {
 });
 
 /**
+ * DELETE /api/user/delete
+ * Soft deletes the authenticated user's profile
+ * Protected: Requires authentication
+ */
+router.delete("/user/delete", requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", userId);
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      message: "User profile successfully deleted",
+    });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({
+      ok: false,
+      error: "Failed to delete user profile",
+      details: error.message,
+    });
+  }
+});
+
+/**
  * GET /api/health
  * Health check endpoint
  */
