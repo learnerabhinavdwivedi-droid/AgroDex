@@ -111,11 +111,18 @@ This is the instruction about how to get work with this project:
    pnpm install
    ```
 3. Configure Environment Variables
-   ```sh
-   cp backend/.env.example backend/.env
-   // edit backend/.env and fill:
-   // OPERATOR_ID, OPERATOR_KEY, GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
-   ```
+   
+   - **Frontend**: Copy `.env.example` at the root of the project to `.env`:
+     ```sh
+     cp .env.example .env
+     ```
+     Open `.env` and configure `VITE_WALLETCONNECT_PROJECT_ID`. Contributors need to obtain their own WalletConnect Project ID by registering their dApp on the [WalletConnect Cloud Dashboard](https://cloud.walletconnect.com/).
+     
+   - **Backend**: Copy `backend/.env.example` to `backend/.env`:
+     ```sh
+     cp backend/.env.example backend/.env
+     ```
+     Edit `backend/.env` and fill in: `OPERATOR_ID`, `OPERATOR_KEY`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`.
 4. Seed the demo data
    ```sh
    cd backend
