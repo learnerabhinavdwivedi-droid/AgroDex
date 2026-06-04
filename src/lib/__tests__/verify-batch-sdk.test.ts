@@ -10,19 +10,19 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-const describeWithSupabaseCredentials =
-  SUPABASE_URL && SUPABASE_ANON_KEY ? describe : describe.skip;
 
-describeWithSupabaseCredentials("verify-batch Edge Function - SDK Tests", () => {
-  const supabase =
-    SUPABASE_URL && SUPABASE_ANON_KEY
-      ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  describe.skip("verify-batch Edge Function - SDK Tests", () => {
+    it("requires SUPABASE_URL and SUPABASE_ANON_KEY", () => {});
+  });
+} else {
+  describe("verify-batch Edge Function - SDK Tests", () => {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  it("should return error for missing tokenId", async () => {
-    const { data, error } = await supabase!.functions.invoke("verify-batch", {
-      body: { serialNumber: "1" },
-    });
+    it("should return error for missing tokenId", async () => {
+      const { data, error } = await supabase.functions.invoke("verify-batch", {
+        body: { serialNumber: "1" },
+      });
 
     if (error && error.message.includes("404")) {
       throw new Error("verify-batch function not deployed (404)");
@@ -40,7 +40,7 @@ describeWithSupabaseCredentials("verify-batch Edge Function - SDK Tests", () => 
   });
 
   it("should return error for missing serialNumber", async () => {
-    const { data, error } = await supabase!.functions.invoke("verify-batch", {
+    const { data, error } = await supabase.functions.invoke("verify-batch", {
       body: { tokenId: "0.0.7160982" },
     });
 
@@ -59,7 +59,7 @@ describeWithSupabaseCredentials("verify-batch Edge Function - SDK Tests", () => 
   });
 
   it("should verify NFT with valid tokenId and serialNumber", async () => {
-    const { data, error } = await supabase!.functions.invoke("verify-batch", {
+    const { data, error } = await supabase.functions.invoke("verify-batch", {
       body: {
         tokenId: "0.0.7160982",
         serialNumber: "1",
@@ -93,7 +93,7 @@ describeWithSupabaseCredentials("verify-batch Edge Function - SDK Tests", () => 
   });
 
   it("should handle non-existent NFT gracefully", async () => {
-    const { data, error } = await supabase!.functions.invoke("verify-batch", {
+    const { data, error } = await supabase.functions.invoke("verify-batch", {
       body: {
         tokenId: "0.0.9999999",
         serialNumber: "999",
@@ -118,7 +118,7 @@ describeWithSupabaseCredentials("verify-batch Edge Function - SDK Tests", () => 
   });
 
   it("should include diagnostic stage information in responses", async () => {
-    const { data, error } = await supabase!.functions.invoke("verify-batch", {
+    const { data, error } = await supabase.functions.invoke("verify-batch", {
       body: {
         tokenId: "0.0.7160982",
         serialNumber: "1",
@@ -143,6 +143,7 @@ describeWithSupabaseCredentials("verify-batch Edge Function - SDK Tests", () => 
     console.log("Full response:", JSON.stringify(data, null, 2));
   });
 });
+}
 
 /**
  * Instructions de déploiement si tests échouent avec 404:
